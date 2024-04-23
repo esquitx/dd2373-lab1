@@ -19,11 +19,12 @@ public class Automaton<State, Sym> {
                 addTransitions(src, dst, a.trans.get(src).get(dst));
     }
 
-    public Set<Sym> getAlphabet() {
-        Set<Sym> alphabet = new HashSet<>();
-        for (Map<State, Set<Sym>> transitionsFromState : trans.values()) {
-            for (Set<Sym> symbols : transitionsFromState.values()) {
-                alphabet.addAll(symbols);
+    public Set<Character> getAlphabet() {
+        Set<Character> alphabet = new HashSet<>();
+        for (char c = 32; c <= 126; c++) {
+            // exclude specific characters
+            if (c != '.' && c != '|' && c != '*' && c != '+' && c != '?' && c != '(' && c != ')') {
+                alphabet.add(c);
             }
         }
         return alphabet;
