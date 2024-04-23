@@ -22,18 +22,21 @@ public class MyApplication {
 
         // 3.2 - Build eps-nfa from parsed expression
         // ->
-        EpsNFA parserNFA = REParser.parse("(aba)*c+a|cd").accept(new PrettyBuilder()); // -> ((((((ab)a)*)(c+))a)|(cd))
+        EpsNFA parserNFA = REParser.parse("a+").accept(new PrettyBuilder()); // -> ((((((ab)a)*)(c+))a)|(cd))
         // <-
+
+        parserNFA.printGV();
 
         // 3.3 - Converting to equivalent DFA
         // ->
-        DFA dfa = parserNFA.convertToDFA();
+        // DFA dfa = parserNFA.convertToDFA();
         // <-
 
         // 3.4 - Minimizing the DFA
         // ->
         dfa.minimize();
         // <-
+        System.out.println();
 
         // 3.5 - Simulating the DFA
         // ->

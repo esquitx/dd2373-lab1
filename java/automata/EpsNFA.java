@@ -15,6 +15,7 @@ public class EpsNFA extends Automaton<Integer, Character> {
     }
 
     public EpsNFA shiftStates(int delta) {
+        
         EpsNFA newNfa = new EpsNFA();
 
         for (int src : trans.keySet())
