@@ -1,7 +1,6 @@
 package automata;
 
 import java.util.*;
-import javafx.util.Pair;
 
 public class DFA extends Automaton<Set<Integer>, Character> {
 
@@ -13,63 +12,47 @@ public class DFA extends Automaton<Set<Integer>, Character> {
         // We use Myhill-Nerode Theorem
 
         // Step 1: Create pairs (a, b) of all states in DFA
-
-        // First create table
-        Map<List<Set<Integer>>, Boolean> statePairs = new HashMap<>();
-
-        for (Set<Integer> a : this.getStates()) {
-            for (Set<Integer> b : this.getStates()) {
+        Set<List<Set<Integer>>> statePairs = new HashSet<>();
+        for (Set<Integer> a : getStates()) {
+            for (Set<Integer> b : getStates()) {
                 if (!a.equals(b)) {
-                    List<Set<Integer>> pair = new ArrayList<>();
-                    pair.add(a);
-                    pair.add(b);
-
-                    if (!statePairs.containsKey(pair)) {
-                        statePairs.put(pair, false);
-                    }
-
+                    List<Set<Integer>> pair = Arrays.asList(a, b);
+                    statePairs.add(pair);
                 }
             }
         }
 
-        // Step 2 : Mark pairs were a is final and b is non final
-
-        for (List<Set<Integer>> pair : statePairs.keySet()) {
+        // Step 2: Mark pairs where one state is final and the other is non-final
+        Map<List<Set<Integer>>, Boolean> markedPairs = new HashMap<>();
+        for (List<Set<Integer>> pair : statePairs) {
+            markedPairs.put(pair, false);
+        }
+        for (List<Set<Integer>> pair : statePairs) {
             Set<Integer> a = pair.get(0);
             Set<Integer> b = pair.get(1);
-            if ((this.getAcceptingStates().contains(a) && !this.getAcceptingStates().contains(b))
-                    || (this.getAcceptingStates().contains(a) && this.getAcceptingStates().contains(b))) {
-                // mark
-                statePairs.put(pair, true);
-            }
+            boolean marked = (getAcceptingStates().contains(a) && !getAcceptingStates().contains(b)) ||
+                    (getAcceptingStates().contains(b) && !getAcceptingStates().contains(a));
+            markedPairs.put(pair, marked);
         }
 
-        // For an input symnbol x
-
-        // Step 3 : If there is an unamrked pair (a, b) such that
-        // d(a, x) and d(b, x) is marked, then mark (a, b)
+        // Step 3: Mark pairs based on transitions
         boolean marked;
         do {
             marked = false;
-            for (List<Set<Integer>> pair : statePairs.keySet()) {
-                if (!statePairs.get(pair)) { // Check unmarked pairs
+            for (List<Set<Integer>> pair : statePairs) {
+                if (!markedPairs.get(pair)) {
                     Set<Integer> a = pair.get(0);
                     Set<Integer> b = pair.get(1);
-                    for (Character x : this.getAlphabet()) {
-                        if (!statePairs.get(pair)) {
-                            Set<Set<Integer>> nextA = this.getSuccessors(a, x);
-                            Set<Set<Integer>> nextB = this.getSuccessors(b, x);
-                            for (Set<Integer> succA : nextA) {
-                                for (Set<Integer> succB : nextB) {
-                                    List<Set<Integer>> succPair = new ArrayList<>();
-                                    succPair.add(succA);
-                                    succPair.add(succB);
-                                    if (statePairs.get(succPair)) {
-                                        statePairs.put(pair, true);
-                                        marked = true;
-                                        break;
-                                    }
-                                }
+                    for (char symbol : getAlphabet()) {
+                        Set<Set<Integer>> nextA = getSuccessors(a, symbol);
+                        Set<Set<Integer>> nextB = getSuccessors(b, symbol);
+                        if (!nextA.isEmpty() && !nextB.isEmpty()) {
+                            List<Set<Integer>> nextPair = Arrays.asList(nextA.iterator().next(),
+                                    nextB.iterator().next());
+                            if (markedPairs.get(nextPair)) {
+                                markedPairs.put(pair, true);
+                                marked = true;
+                                break;
                             }
                         }
                     }
@@ -78,14 +61,32 @@ public class DFA extends Automaton<Set<Integer>, Character> {
         } while (marked);
 
         // Step 4: Combine all unmarked pairs and make them a single state
-        List<Set<Integer>> finalStates = new ArrayList<>();
-        for (List<Set<Integer>> pair : statePairs.keySet()) {
-            if (!statePairs.get(pair)) {
+        for (List<Set<Integer>> pair : statePairs) {
+            if (!markedPairs.get(pair)) {
                 Set<Integer> newState = new HashSet<>();
                 newState.addAll(pair.get(0));
                 newState.addAll(pair.get(1));
-                finalStates.add(newState);
+                mergeStates(newState, pair.get(0));
+                mergeStates(newState, pair.get(1));
             }
         }
+    }
+
+    // Simulates the DFA, returns the state in which we stop.
+    public Set<Integer> simulate(String input) {
+
+        Set<Integer> currentState = getInitialState();
+
+        for (char c : input.toCharArray()) {
+
+            Set<Set<Integer>> successors = getSuccessors(currentState, c);
+
+            if (successors != null && !successors.isEmpty()) {
+                // there should only be one, since DFA is minimized
+                currentState = successors.iterator().next();
+            }
+        }
+
+        return currentState;
     }
 }
