@@ -5,7 +5,7 @@ import java.util.Set;
 
 import automata.resyntax.*;
 
-public class PrettyBuilder implements RegExpVisitor {
+public class DiegoBuilder implements RegExpVisitor {
 
     public EpsNFA visit(Closure closure) {
 

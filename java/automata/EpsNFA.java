@@ -5,9 +5,11 @@ import java.util.*;
 public class EpsNFA extends Automaton<Integer, Character> {
 
     public final static Character EPSILON = '\u03B5';
+    public static Integer STATE_COUNTER = 0;
 
     public EpsNFA() {
         initial = 0;
+        STATE_COUNTER = 0;
     }
 
     public Integer getMaxState() {
@@ -15,7 +17,6 @@ public class EpsNFA extends Automaton<Integer, Character> {
     }
 
     public EpsNFA shiftStates(int delta) {
-        
         EpsNFA newNfa = new EpsNFA();
 
         for (int src : trans.keySet())
@@ -77,7 +78,9 @@ public class EpsNFA extends Automaton<Integer, Character> {
             for (char symbol : getAllInputSymbols()) {
                 // Step 4a: Compute the set of states reachable from the current state under the
                 // symbol
+
                 Set<Integer> nextState = new HashSet<>();
+
                 for (int state : currentState) {
                     Set<Integer> transitions = getSuccessors(state, symbol);
                     if (transitions != null) {
