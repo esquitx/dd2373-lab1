@@ -14,7 +14,7 @@ public class MyApplication {
     public static boolean mySearch(String regex, String text) throws Exception {
 
         // 3.1 - Read and parse the NFA (use provided code)
-        String alphabet = "";
+        String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
         Set<Character> sigma = new HashSet<>();
 
         for (char c : alphabet.toCharArray())
@@ -22,7 +22,7 @@ public class MyApplication {
 
         // 3.2 - Build eps-nfa from parsed expression
         // ->
-        EpsNFA parserNFA = REParser.parse(regex).accept(new AdamBuilder(sigma)); // -> ((((((ab)a)*)(c+))a)|(cd))
+        EpsNFA parserNFA = REParser.parse(regex).accept(new DiegoBuilder(sigma)); // -> ((((((ab)a)*)(c+))a)|(cd))
         // parserNFA.printGV();
         // <-
 
@@ -54,7 +54,7 @@ public class MyApplication {
 
     public static void main(String[] args) throws Exception {
 
-        mySearch("a+", "bcd");
+        mySearch("(ab)+", "bcd");
         System.exit(0);
     }
 

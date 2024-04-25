@@ -7,6 +7,12 @@ import automata.resyntax.*;
 
 public class DiegoBuilder implements RegExpVisitor {
 
+    public Set<Character> sigma;
+
+    public DiegoBuilder(Set<Character> sigma) {
+        this.sigma = sigma;
+    }
+
     public EpsNFA visit(Closure closure) {
 
         EpsNFA innerNFA = closure.r.accept(this);
