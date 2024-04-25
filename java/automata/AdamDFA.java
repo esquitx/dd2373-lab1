@@ -103,7 +103,7 @@ public class DFA extends Automaton<Set<Integer>, Character>{
             }
         }
 
-        // create equivalence classes
+        // 4. create equivalence classes
         Set<Set<Set<Integer>>> equivalenceClasses = new HashSet<>();
 
         for (int i = 0; i < states.length; i++) {
@@ -126,6 +126,14 @@ public class DFA extends Automaton<Set<Integer>, Character>{
                 }
             }
         }
+
+        // 5. in each equivalence class, merge the equivalent states into the first one to minimize DFA
+        for (Set<Set<Integer>> equivalentStates : equivalenceClasses) {
+            Set<Integer> mergeInto = equivalentStates.iterator().next();
+            for (Set<Integer> mergeFrom : equivalentStates)
+                this.mergeStates(mergeInto, mergeFrom);
+        }
+
 //        // print table
 //        for (int i = 0; i < states.length; i++) {
 //            for (int j = i+1; j < states.length; j++) {
@@ -133,16 +141,7 @@ public class DFA extends Automaton<Set<Integer>, Character>{
 //            }
 //            System.out.println();
 //        }
-
 //        // print equivalence classes
 //        System.out.println(equivalenceClasses);
-
-        // in each equivalence class, merge the equivalent states into the first one to minimize DFA
-        for (Set<Set<Integer>> equivalentStates : equivalenceClasses) {
-            Set<Integer> mergeInto = equivalentStates.iterator().next();
-            for (Set<Integer> mergeFrom : equivalentStates)
-                this.mergeStates(mergeInto, mergeFrom);
-        }
-
     }
 }
