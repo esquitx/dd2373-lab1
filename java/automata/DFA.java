@@ -38,6 +38,8 @@ public class DFA extends Automaton<Set<Integer>, Character> {
         // Step 3: Mark pairs based on transitions
         boolean marked;
         do {
+            // System.out.print("marked pairs: ");
+            // System.out.println(markedPairs);
             marked = false;
             for (List<Set<Integer>> pair : statePairs) {
                 if (!markedPairs.get(pair)) {
@@ -49,11 +51,15 @@ public class DFA extends Automaton<Set<Integer>, Character> {
                         if (!nextA.isEmpty() && !nextB.isEmpty()) {
                             List<Set<Integer>> nextPair = Arrays.asList(nextA.iterator().next(),
                                     nextB.iterator().next());
-                            if (markedPairs.get(nextPair)) {
-                                markedPairs.put(pair, true);
-                                marked = true;
-                                break;
-                            }
+                            // add sanity check (next pair in keys we're interested in)
+                            // why? before, it could happen (a, a) was a next pair, but we don't care about
+                            // repeatred pairs.
+                            if (markedPairs.keySet().contains(nextPair))
+                                if (markedPairs.get(nextPair)) {
+                                    markedPairs.put(pair, true);
+                                    marked = true;
+                                    break;
+                                }
                         }
                     }
                 }
