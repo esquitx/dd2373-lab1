@@ -136,4 +136,39 @@ public class EpsNFA extends Automaton<Integer, Character> {
         return symbols;
     }
 
+    public boolean simulate(String input) {
+        Set<Integer> currentStates = epsClosure(initial);
+
+        // Iterate over each character in the input string
+        for (char c : input.toCharArray()) {
+            Set<Integer> nextStates = new HashSet<>();
+
+            // Find the next states for each current state and input symbol
+            for (int currentState : currentStates) {
+                Set<Integer> successors = getSuccessors(currentState, c);
+                if (successors != null) {
+                    nextStates.addAll(successors);
+                }
+            }
+
+            // Take epsilon closures of all the next states
+            Set<Integer> epsNextStates = new HashSet<>();
+            for (int nextState : nextStates) {
+                epsNextStates.addAll(epsClosure(nextState));
+            }
+
+            // Update the current states
+            currentStates = epsNextStates;
+        }
+
+        // Check if any of the final states are reached
+        for (int state : currentStates) {
+            if (accepting.contains(state)) {
+                return true; // Final state reached
+            }
+        }
+
+        return false; // Final state not reached
+    }
+
 }

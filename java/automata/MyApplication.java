@@ -1,6 +1,7 @@
 package automata;
 
 import java.util.*;
+import java.io.File;
 import java.util.Scanner;
 
 /* TODO: Implement a grep-like tool. */
@@ -44,6 +45,7 @@ public class MyApplication {
         Set<Integer> endState = dfa.simulate(text);
 
         return dfa.getAcceptingStates().contains(endState);
+
     }
 
     public static void main(String[] args) throws Exception {
@@ -51,17 +53,25 @@ public class MyApplication {
         String alphabet;
         String regex;
         String text = "";
-        Scanner s = new Scanner(System.in);
+
+        // String input = args[0];
+        // System.out.println(input);
+        Scanner s = new Scanner(new File(
+                "C:/Users/diego/OneDrive/Documentos/MATH/23-24/Spring/DD2373 - Automata and Languages/Labs/Lab 1/testcases/input.txt"));
 
         // Read data
         alphabet = s.nextLine();
+        System.out.println(alphabet);
         regex = ".*" + s.nextLine();
+        System.out.println(regex);
 
-        while (s.hasNextLine())
+        while (s.hasNextLine()) {
             text = s.nextLine();
-        if (mySearch(alphabet, regex, text))
-            System.out.println(text);
+            if (mySearch(alphabet, regex, text))
+                System.out.println(text);
+        }
 
+        s.close();
         System.exit(0);
     }
 

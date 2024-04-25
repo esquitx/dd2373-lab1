@@ -16,6 +16,7 @@ public class DiegoBuilder implements RegExpVisitor {
 
         EpsNFA innerNFA = closure.r.accept(this);
 
+        
         // 1. Add epsilon transition from accepting to initial
         for (int accepting : innerNFA.getAcceptingStates()) {
             innerNFA.addTransition(accepting, innerNFA.getInitialState(), EpsNFA.EPSILON);
